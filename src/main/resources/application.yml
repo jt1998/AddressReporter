@@ -1,0 +1,47 @@
+##端口
+#server:
+#  port: 8080
+
+#datasource配置
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+#    url: jdbc:postgresql://pgm-gv3x980j9kdsaab9.pg.rds.ops.yun.ga:3433/pgis110?currentSchema=public
+#    username: ytxzqh
+#    password: yt@133*xzqh
+    url: jdbc:postgresql://172.18.71.231:5432/address_statistic?currentSchema=public
+    username: postgres
+    password: postgres
+    hikari:
+      idle-timeout: 60000
+      connection-timeout: 60000
+
+    #redis配置
+  redis:
+    database: 0
+    host: 127.0.0.1               # Redis主机地址
+    port: 6379                    # Redis密码
+    password:
+
+
+#MyBatis配置
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    jdbc-type-for-null: null
+    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:mapper/*.xml
+
+#注册信息配置
+user:
+  username: ceshi
+  password: 111111
+  addrserverurl: http://14.31.123.48:8080/AddressReporter
+  remark: 青海地址联网上传服务
+  rec_type_bzdz: rec_bzdz
+  rec_type_fbzdz: rec_fbzdz
+  usernamepy: qinghai   #全局的redis hashkey
+  uploadperbatch: 3000  #全局推送数据的遍历的数据量
+  httpurl: http://11.33.3.248:18081/PADD_S_LWServer/   #基本http路径
+  websocket_url: ws://127.0.0.1:8080/ws #websocket路径
+

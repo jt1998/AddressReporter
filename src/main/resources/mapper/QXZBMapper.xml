@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.founder.addressreporter.mapper.QXZBMapper">
+    <select id="checkZB" resultType="java.lang.Long">
+        select adaid
+        from xzqh.xzqh_city_py
+        where public.st_within(public.st_makepoint(#{x},#{y}),geom) = true
+        and namec = '青海省'
+    </select>
+
+</mapper>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.founder.addressreporter.mapper.REC_ErrorDataMapper">
+
+    <!--标准地址重复数据-->
+    <insert id="insertDzRepeatErrorDataByBeginIdAndEndIdOnBzdz">
+        insert into fault_tolerant_table (dzbm,dzmc,x,y,errorflag,errorflagstr,source,sourcestr,rksj)
+        select dzbm,dzmc,zxdhzb,zxdzzb,'03','地址名称重复','01','标准地址',to_date(to_char(now(),'yyyy-MM-dd hh:MM:ss'),'yyyy-MM-dd hh:MM:ss')
+        from anhui_addr_bzdz where dzmc
+                                in (select dzmc from anhui_addr_bzdz where id  BETWEEN #{beginId} and #{endId} group by dzmc having count(1) > 1)
+    </insert>
+
+    <!--标准坐标不正确数据-->
+    <insert id="insertDzErrorDataByBeginIdAndEndIdOnBzdz">
+        insert into fault_tolerant_table(dzbm,dzmc,x,y,errorflag,errorflagstr,source,sourcestr,rksj)
+            select dzbm,dzmc,zxdhzb,zxdzzb,'01','经纬度格式不合格','01','标准地址',to_date(to_char(now(),'yyyy-MM-dd hh:MM:ss'),'yyyy-MM-dd hh:MM:ss')
+            from anhui_addr_bzdz
+            where zxdhzb <![CDATA[ <= ]]> 0 or  zxdhzb <![CDATA[ >= ]]> 180
+               or zxdzzb <![CDATA[ <= ]]> 0 or  zxdzzb <![CDATA[ >= ]]> 90
+            and id  BETWEEN #{beginId} and #{endId}
+
+    </insert>
+
+<!--    &lt;!&ndash;标准坐标不在行政区划&ndash;&gt;-->
+<!--    <insert id="insertzbNotInXzqhDataByBeginIdAndEndIdOnBzdz">-->
+<!--        insert into fault_tolerant_table(dzbm,dzmc,x,y,errorflag,errorflagstr,source,sourcestr,rksj)-->
+<!--        select a.dzbm,a.dzmc,a.zxdhzb,a.zxdzzb,'02','经纬度不在行政区划范围内','01','标准地址',to_date(to_char(now(),'yyyy-MM-dd hh:MM:ss'),'yyyy-MM-dd hh:MM:ss')-->
+<!--        from anhui_addr_bzdz as a-->
+<!--        left join xzqh.xzqh_province_py as b-->
+<!--        on a.city = b.namec-->
+<!--        where public.st_within(public.st_makepoint(a.zxdhzb,a.zxdzzb),b.geom) = false-->
+<!--        and a.id  BETWEEN #{beginId} and #{endId}-->
+<!--    </insert>-->
+
+    <!--标准坐标不在行政区划-->
+    <insert id="insertzbNotInXzqhDataByBeginIdAndEndIdOnBzdz">
+        insert into fault_tolerant_table(dzbm,dzmc,x,y,errorflag,errorflagstr,source,sourcestr,rksj)
+        select a.dzbm,a.dzmc,a.zxdhzb,a.zxdzzb,'02','经纬度不在行政区划范围内','01','标准地址',to_date(to_char(now(),'yyyy-MM-dd hh:MM:ss'),'yyyy-MM-dd hh:MM:ss')
+        from anhui_addr_bzdz as a
+                 left join xzqh_province_py as b
+                           on a.city = b.namec
+        where public.st_within(public.st_makepoint(a.zxdhzb,a.zxdzzb),b.geom) = false
+          and a.id  BETWEEN #{beginId} and #{endId}
+    </insert>
+
+
+    <!--插入数据是进行判断添加错误数据-->
+    <insert id="insertErrorData" parameterType="com.founder.addressreporter.bean.REC_ErrorData">
+        insert into fault_tolerant_table(dzbm,dzmc,x,y,errorflag,errorflagstr,source,sourcestr,rksj)
+         values (#{dzbm},#{dzmc},#{x},#{y},#{errorFlag},#{errorFlagStr},#{source},#{sourceStr},#{rksj})
+    </insert>
+
+    <!--非标准地址重复数据-->
+    <insert id="insertDzRepeatErrorDataByBeginIdAndEndIdOnFBzdzb">
+        insert into fault_tolerant_table (dzbm,dzmc,x,y,errorflag,errorflagstr,source,sourcestr,rksj)
+        select dzbm,dzmc,zxdhzb,zxdzzb,'03','地址名称重复','02','非标准地址',to_date(to_char(now(),'yyyy-MM-dd hh:MM:ss'),'yyyy-MM-dd hh:MM:ss')
+        from anhui_addr_fbzdz where dzmc
+                                      in (select dzmc from anhui_addr_fbzdz where id  BETWEEN #{beginId} and #{endId} group by dzmc having count(1) > 1)
+    </insert>
+
+    <!--非标准地址地址不正确数据-->
+    <insert id="insertDzErrorDataByBeginIdAndEndIdOnFBzdz">
+        insert into fault_tolerant_table(dzbm,dzmc,x,y,errorflag,errorflagstr,source,sourcestr,rksj)
+        select dzbm,dzmc,zxdhzb,zxdzzb,'01','经纬度格式不合格','02','非标准地址',to_date(to_char(now(),'yyyy-MM-dd hh:MM:ss'),'yyyy-MM-dd hh:MM:ss')
+        from anhui_addr_fbzdz
+        where zxdhzb <![CDATA[ <= ]]> 0 or  zxdhzb <![CDATA[ >= ]]> 180
+           or zxdzzb <![CDATA[ <= ]]> 0 or  zxdzzb <![CDATA[ >= ]]> 90
+            and id  BETWEEN #{beginId} and #{endId}
+    </insert>
+
+ <!--   &lt;!&ndash;非标准坐标不在省份行政区划&ndash;&gt;
+
+    <insert id="insertzbNotInXzqhDataByBeginIdAndEndIdOnFBzdz">
+        insert into fault_tolerant_table(dzbm,dzmc,x,y,errorflag,errorflagstr,source,sourcestr,rksj)
+
+        select a.dzbm,a.dzmc,a.zxdhzb,a.zxdzzb,'02','经纬度不在行政区划范围内','02','非标准地址',to_date(to_char(now(),'yyyy-MM-dd hh:MM:ss'),'yyyy-MM-dd hh:MM:ss')
+        from anhui_addr_fbzdz as a
+                 left join xzqh.xzqh_province_py as b
+                 on a.city = b.namec
+            where public.st_within(public.st_makepoint(a.zxdhzb,a.zxdzzb),b.geom) = false
+          and a.id  BETWEEN #{beginId} and #{endId}
+
+    </insert>-->
+
+
+    <!--非标准坐标不在省份行政区划-->
+
+    <insert id="insertzbNotInXzqhDataByBeginIdAndEndIdOnFBzdz">
+        insert into fault_tolerant_table(dzbm,dzmc,x,y,errorflag,errorflagstr,source,sourcestr,rksj)
+
+        select a.dzbm,a.dzmc,a.zxdhzb,a.zxdzzb,'02','经纬度不在行政区划范围内','02','非标准地址',to_date(to_char(now(),'yyyy-MM-dd hh:MM:ss'),'yyyy-MM-dd hh:MM:ss')
+        from anhui_addr_fbzdz as a
+                 left join xzqh_province_py as b
+                           on a.city = b.namec
+        where public.st_within(public.st_makepoint(a.zxdhzb,a.zxdzzb),b.geom) = false
+          and a.id  BETWEEN #{beginId} and #{endId}
+
+    </insert>
+
+
+</mapper>

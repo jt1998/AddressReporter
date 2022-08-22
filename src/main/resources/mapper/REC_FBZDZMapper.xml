@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.founder.addressreporter.mapper.REC_FBZDZMapper">
+
+    <resultMap id="BaseMap" type="com.founder.addressreporter.bean.New_REC_FBZDZ">
+        <result column="dzbm" property="dzbm"></result>
+        <result column="dzmc" property="dzmc"></result>
+        <result column="bmjc" property="bmjc"></result>
+        <result column="zxdhzb" property="zxdhzb"></result>
+        <result column="zxdzzb" property="zxdzzb"></result>
+        <result column="dzzt" property="dzzt"></result>
+        <result column="sszdyjxzqy_xzqhdm" property="sszdyjxzqy_xzqhdm"></result>
+        <result column="sszdyjxzqy_xzqhmc" property="sszdyjxzqy_xzqhmc"></result>
+        <result column="ss_xzjddm" property="ss_xzjddm"></result>
+        <result column="ssxzjdmc" property="ssxzjdmc"></result>
+        <result column="ss_sqjcwhdm" property="ss_sqjcwhdm"></result>
+        <result column="sssqjcwhmc" property="sssqjcwhmc"></result>
+        <result column="ssjlx_dzbm" property="ssjlx_dzbm"></result>
+        <result column="ssjlxmc" property="ssjlxmc"></result>
+        <result column="ssxq_dzbm" property="ssxq_dzbm"></result>
+        <result column="ssxqmc" property="ssxqmc"></result>
+        <result column="ssjzw_dzbm" property="ssjzw_dzbm"></result>
+        <result column="ssjzwmc" property="ssjzwmc"></result>
+        <result column="ssdyfw_dzbm" property="ssdyfw_dzbm"></result>
+        <result column="ssdyfwmc" property="ssdyfwmc"></result>
+        <result column="sjscsj" property="sjscsj"></result>
+        <result column="gxsj" property="gxsj"></result>
+        <result column="dzlyfl" property="dzlyfl"></result>
+        <result column="dzly_xzqhdm" property="dzly_xzqhdm"></result>
+        <result column="dzly_dwmc" property="dzly_dwmc"></result>
+        <result column="dzly_xtmc" property="dzly_xtmc"></result>
+        <result column="dzly_wybs" property="dzly_wybs"></result>
+        <result column="bz" property="bz"></result>
+        <result column="kjzb" property="kjzb"></result>
+    </resultMap>
+    <sql id="base_column">
+         id,dzbm,dzmc,bmjc,
+         zxdhzb,zxdzzb,dzzt,sszdyjxzqy_xzqhdm,sszdyjxzqy_xzqhmc,
+         ss_xzjddm,ssxzjdmc,ss_sqjcwhdm,sssqjcwhmc,
+         ssjlx_dzbm,ssjlxmc,ssxq_dzbm,ssxqmc,
+         ssjzw_dzbm,ssjzwmc,ssdyfw_dzbm,ssdyfwmc,
+         to_char(sjscsj,'yyyy-mm-dd hh24:mi:ss') as sjscsj,
+         to_char(gxsj,'yyyy-mm-dd hh24:mi:ss') as gxsj,
+         dzlyfl,dzly_xzqhdm,
+         dzly_dwmc,dzly_xtmc,dzly_wybs,bz,kjzb
+    </sql>
+    <insert id="insert" parameterType="java.util.List">
+        insert into anhui_addr_fbzdz (dzbm,dzmc,bmjc,
+                                    zxdhzb,zxdzzb,dzzt,sszdyjxzqy_xzqhdm,sszdyjxzqy_xzqhmc,
+                                    ss_xzjddm,ssxzjdmc,ss_sqjcwhdm,sssqjcwhmc,
+                                    ssjlx_dzbm,ssjlxmc,ssxq_dzbm,ssxqmc,
+                                    ssjzw_dzbm,ssjzwmc,ssdyfw_dzbm,ssdyfwmc,
+                                    sjscsj,gxsj,dzlyfl,dzly_xzqhdm,
+                                    dzly_dwmc,dzly_xtmc,dzly_wybs,bz)  values
+                        <foreach collection="list" index="index" item="fbzdz" separator=",">
+                            (#{fbzdz.dzbm},#{fbzdz.dzmc},#{fbzdz.bmjc},#{fbzdz.zxdhzb},
+                            #{fbzdz.zxdzzb},#{fbzdz.dzzt},#{fbzdz.sszdyjxzqy_xzqhdm},#{fbzdz.sszdyjxzqy_xzqhmc},
+                            #{fbzdz.ss_xzjddm},#{fbzdz.ssxzjdmc},#{fbzdz.ss_sqjcwhdm},#{fbzdz.sssqjcwhmc},
+                            #{fbzdz.ssjlx_dzbm},#{fbzdz.ssjlxmc},#{fbzdz.ssxq_dzbm},#{fbzdz.ssxqmc},
+                            #{fbzdz.ssjzw_dzbm},#{fbzdz.ssjzwmc},#{fbzdz.ssdyfw_dzbm},#{fbzdz.ssdyfwmc},
+                            #{fbzdz.sjscsj},#{fbzdz.gxsj},#{fbzdz.dzlyfl},#{fbzdz.dzly_xzqhdm},
+                            #{fbzdz.dzly_dwmc},#{fbzdz.dzly_xtmc},#{fbzdz.dzly_wybs},#{fbzdz.bz})
+                        </foreach>
+    </insert>
+
+    <select id="getMaxIdByTime" resultType="java.lang.Integer">
+    select max(id) as maxid
+    from anhui_addr_fbzdz
+    where gxsj
+              BETWEEN  to_date(#{beginTime},'YYYY-MM-DD HH24:MI:SS')
+              and  to_date(#{endTime},'YYYY-MM-DD HH24:MI:SS')
+</select>
+
+    <select id="findListById" resultMap="BaseMap">
+        select <include refid="base_column"></include>
+        from anhui_addr_fbzdz
+        where id  BETWEEN #{beginId} and #{endId}
+    </select>
+
+
+
+    <select id="getMaxIdByHandlerId" parameterType="int" resultType="int">
+        select max(id) as maxid from anhui_addr_fbzdz where id  <![CDATA[ <= ]]> #{id}
+    </select>
+
+
+    <select id="getTotal" resultType="int">
+        select count(1)
+        from anhui_addr_fbzdz
+        where gxsj
+                  BETWEEN  to_date(#{beginTime},'YYYY-MM-DD HH24:MI:SS')
+                  and  to_date(#{endTime},'YYYY-MM-DD HH24:MI:SS')
+    </select>
+
+    <!--删除地址重复数据-->
+    <delete id="deleteDzRepeatByBeginIdAndEndIdOnFBzdz">
+        delete from anhui_addr_fbzdz where id in
+             (select id
+              from anhui_addr_fbzdz where dzmc
+                in (select dzmc from anhui_addr_fbzdz where id  BETWEEN #{beginId} and #{endId} group by dzmc having count(1) > 1))
+    </delete>
+
+
+    <!--删除坐标不正确的数据-->
+    <delete id="deleteDzErrorByBeginIdAndEndIdOnFBzdz">
+        delete from anhui_addr_fbzdz where id in
+                                 (select id
+                                  from anhui_addr_fbzdz
+                                  where zxdhzb <![CDATA[ <= ]]> 0 or  zxdhzb <![CDATA[ >= ]]> 180
+                                     or zxdzzb <![CDATA[ <= ]]> 0 or  zxdzzb <![CDATA[ >= ]]> 90
+                                      and id  BETWEEN #{beginId} and #{endId})
+    </delete>
+
+    <!--删除坐标不在行政区划范围内的数据-->
+<!--    <delete id="deletezbNotInXzqhByBeginIdAndEndIdOnFBzdz">-->
+<!--        delete from anhui_addr_fbzdz where id in(-->
+<!--            select a.id-->
+<!--            from anhui_addr_fbzdz as a-->
+<!--                     left join xzqh.xzqh_province_py as b-->
+<!--                               on a.city = b.namec-->
+<!--              where public.st_within(public.st_makepoint(a.zxdhzb,a.zxdzzb),b.geom) = false-->
+<!--              and a.id  BETWEEN #{beginId} and #{endId})-->
+<!--    </delete>-->
+
+    <delete id="deletezbNotInXzqhByBeginIdAndEndIdOnFBzdz">
+        delete from anhui_addr_fbzdz where id in(
+            select a.id
+            from anhui_addr_fbzdz as a
+                     left join xzqh_province_py as b
+                               on a.city = b.namec
+            where public.st_within(public.st_makepoint(a.zxdhzb,a.zxdzzb),b.geom) = false
+              and a.id  BETWEEN #{beginId} and #{endId})
+    </delete>
+
+    <!--getAll-->
+    <select id="getAll" resultType="int">
+        select count(1) from  anhui_addr_fbzdz
+    </select>
+
+</mapper>
